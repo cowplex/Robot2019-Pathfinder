@@ -189,6 +189,8 @@ public class Elevator implements Updatable {
 		SmartDashboard.putString("Elevator Setpoint Name", _setpoint_names[_setpoint]);
 		SmartDashboard.putNumber("Elevator Top Actuator Position", _top_potentiometer.get());
 		SmartDashboard.putNumber("Elevator Bottom Actuator Position", _bottom_potentiometer.get());
+		SmartDashboard.putNumber("Elevator Top Actuator Current", _top_actuator.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator Bottom Actuator Current", _bottom_actuator.getOutputCurrent());
 		if(_mode.ordinal() < _top_setpoints[0].length)
 		{
 			SmartDashboard.putNumber("Elevator Top Actuator Commanded Position", _top_setpoints[_setpoint][_mode.ordinal()]);
