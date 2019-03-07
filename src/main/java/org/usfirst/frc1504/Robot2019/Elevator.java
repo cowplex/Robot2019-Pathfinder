@@ -16,6 +16,7 @@ public class Elevator implements Updatable {
 	public enum ELEVATOR_MODE {HATCH, CARGO, INIT};
 	private ELEVATOR_MODE _mode = ELEVATOR_MODE.INIT;
 
+	private String[] _setpoint_names = {"Home 1", "Home 2", "Low", "Mid", "High"};
 	//private double[][] _bottom_setpoints = {{18.4, 10.4}, {18.4, 16.1}, {10.6, 12.5}, {10.6, 30.9}, {80.0, 74.3}};
 	//private double[][] _top_setpoints = {{12.0, 13.8}, {12.0, 58.8}, {24.5, 40.3}, {72.4, 63.9}, {71.0, 72.5}};
 	private double[][] _bottom_setpoints = {{18.4, 10.4}, {18.4, 16.1}, {10.6, 12.5}, {10.6, 30.9}, {80.0, 74.3}};
@@ -185,6 +186,7 @@ public class Elevator implements Updatable {
 		SmartDashboard.putString("Elevator Mode", _mode.toString());
 		SmartDashboard.putBoolean("Elevator Enabled", _elevator_enable);
 		SmartDashboard.putNumber("Elevator Setpoint", _setpoint);
+		SmartDashboard.putString("Elevator Setpoint Name", _setpoint_names[_setpoint]);
 		SmartDashboard.putNumber("Elevator Top Actuator Position", _top_potentiometer.get());
 		SmartDashboard.putNumber("Elevator Bottom Actuator Position", _bottom_potentiometer.get());
 		if(_mode.ordinal() < _top_setpoints[0].length)
@@ -235,7 +237,7 @@ public class Elevator implements Updatable {
 					Preferences.getInstance().putDouble("Elevator_top_" + _setpoint + "_" + _mode.ordinal(), _top_setpoints[_setpoint][_mode.ordinal()]);
 					Preferences.getInstance().putDouble("Elevator_bottom_" + _setpoint + "_" + _mode.ordinal(), _bottom_setpoints[_setpoint][_mode.ordinal()]);
 					
-					System.out.println("Elevator setpoint for position " + _setpoint + " updated");
+					System.out.println("Elevator setpoint for " + _mode.toString() + " - " + _setpoint_names[_setpoint] + " (" + _setpoint + ") updated to (" + _top_setpoints[_setpoint][_mode.ordinal()] + ", " + _bottom_setpoints[_setpoint][_mode.ordinal()] + ")");
 				}
 			}
 		}

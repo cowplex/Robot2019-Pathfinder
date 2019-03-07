@@ -105,9 +105,10 @@ public class Robot extends RobotBase {
 			public void run() {
 				_arduino.setPartyMode(PARTY_MODE.ON);
 				char edge_track = 0;
-				//PowerDistributionPanel pdp = new PowerDistributionPanel();
+				PowerDistributionPanel pdp = new PowerDistributionPanel();
 				//Compressor c = new Compressor(0);
-				SmartDashboard.putNumber("Auton Delay", 0.0);
+				
+				/*SmartDashboard.putNumber("Auton Delay", 0.0);
 				
 				pos.addDefault("Left", new String("Left"));
 				pos.addObject("Mid", new String("Mid"));
@@ -122,7 +123,7 @@ public class Robot extends RobotBase {
 				//autoChooser1.addObject("Switch & Exchange", new String("SwitchExchange"));
 								
 				SmartDashboard.putData("Position Chooser", pos);
-				SmartDashboard.putData("Auton Mode Chooser", autoChooser1);
+				SmartDashboard.putData("Auton Mode Chooser", autoChooser1);*/
 				
 				
 				
@@ -135,18 +136,18 @@ public class Robot extends RobotBase {
 
 					//SmartDashboard.putNumber("Robot Voltage", RobotController.getBatteryVoltage());
 					//SmartDashboard.putNumber("Robot Time", m_ds.getMatchTime());
-					//SmartDashboard.putNumber("Robot Current", pdp.getTotalCurrent());
+					SmartDashboard.putNumber("Robot Current", pdp.getTotalCurrent());
 					//SmartDashboard.putNumber("Arm Power", _pickup.getPower());
 					//SmartDashboard.putNumber("Pressure High", pressure_1.getAverageVoltage()*50 - 25);
 					//SmartDashboard.putNumber("Pressure Low", pressure_2.getAverageVoltage()*50 - 25);
 					
-					SmartDashboard.putBoolean("Good Configuration", Auto_Alignment.check_sensors());
-					SmartDashboard.putBoolean("Sensor 1", Auto_Alignment.sensor1.get());
-					SmartDashboard.putBoolean("Sensor 2", Auto_Alignment.sensor2.get());
-					SmartDashboard.putBoolean("Sensor 3", Auto_Alignment.sensor3.get());
-					SmartDashboard.putBoolean("Sensor 4", Auto_Alignment.sensor4.get());
-					SmartDashboard.putBoolean("Sensor 5", Auto_Alignment.sensor5.get());
-					SmartDashboard.putBoolean("Sensor 6", Auto_Alignment.sensor6.get());
+					SmartDashboard.putBoolean("Alignment Good Configuration", Auto_Alignment.check_sensors());
+					SmartDashboard.putBoolean("Alignment Sensor 1", !Auto_Alignment.sensor1.get());
+					SmartDashboard.putBoolean("Alignment Sensor 2", !Auto_Alignment.sensor2.get());
+					SmartDashboard.putBoolean("Alignment Sensor 3", !Auto_Alignment.sensor3.get());
+					SmartDashboard.putBoolean("Alignment Sensor 4", !Auto_Alignment.sensor4.get());
+					SmartDashboard.putBoolean("Alignment Sensor 5", !Auto_Alignment.sensor5.get());
+					SmartDashboard.putBoolean("Alignment Sensor 6", !Auto_Alignment.sensor6.get());
 					//SmartDashboard.putBoolean("Hatch Indicator", Arms.grabstate);
 
 					/*
