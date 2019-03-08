@@ -13,6 +13,8 @@ import org.usfirst.frc1504.Robot2019.Lift;
 
 //import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
+
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 //import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -138,6 +140,7 @@ public class Drive implements Updatable
 		for(int i = 0; i < Map.DRIVE_MOTOR_PORTS.length; i++)
 		{
 			_motors[i] = new WPI_TalonSRX(Map.DRIVE_MOTOR_PORTS[i]);
+			_motors[i].setNeutralMode(NeutralMode.Brake);
 		}		
 	}
 	

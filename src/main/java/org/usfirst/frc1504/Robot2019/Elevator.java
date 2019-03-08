@@ -200,6 +200,15 @@ public class Elevator implements Updatable {
 		}
 	}
 
+	public void set(ELEVATOR_MODE mode, int position, boolean enable_override)
+	{
+		_mode = mode;
+		_setpoint = position;
+
+		if(!_elevator_enable && enable_override)
+			_elevator_enable = true;
+	}
+
 	public void semaphore_update() // updates robot information
 	{
 		update_dashboard();

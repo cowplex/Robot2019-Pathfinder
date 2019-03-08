@@ -23,6 +23,7 @@ import edu.wpi.first.hal.HALUtil;
 //-import com.ctre.CANTalon;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -106,6 +107,9 @@ public class Robot extends RobotBase {
 				_arduino.setPartyMode(PARTY_MODE.ON);
 				char edge_track = 0;
 				PowerDistributionPanel pdp = new PowerDistributionPanel();
+
+				AnalogInput pressure_1 = new AnalogInput(2);
+				AnalogInput pressure_2 = new AnalogInput(3);
 				//Compressor c = new Compressor(0);
 				
 				/*SmartDashboard.putNumber("Auton Delay", 0.0);
@@ -138,8 +142,8 @@ public class Robot extends RobotBase {
 					//SmartDashboard.putNumber("Robot Time", m_ds.getMatchTime());
 					SmartDashboard.putNumber("Robot Current", pdp.getTotalCurrent());
 					//SmartDashboard.putNumber("Arm Power", _pickup.getPower());
-					//SmartDashboard.putNumber("Pressure High", pressure_1.getAverageVoltage()*50 - 25);
-					//SmartDashboard.putNumber("Pressure Low", pressure_2.getAverageVoltage()*50 - 25);
+					SmartDashboard.putNumber("Pressure High", pressure_1.getAverageVoltage()*50 - 25);
+					SmartDashboard.putNumber("Pressure Low", pressure_2.getAverageVoltage()*50 - 25);
 					
 					SmartDashboard.putBoolean("Alignment Good Configuration", Auto_Alignment.check_sensors());
 					SmartDashboard.putBoolean("Alignment Sensor 1", !Auto_Alignment.sensor1.get());
@@ -239,53 +243,14 @@ public class Robot extends RobotBase {
      * Users should add test code to this method that should run while the robot is in test mode.
      */
     public void test() {
-    	System.out.println("Test Mode!");
-    	/*DoubleSolenoid _piston1 = new DoubleSolenoid(0, 1);
-    	WPI_TalonSRX _motor = new WPI_TalonSRX(Map.ARM_TALON_PORT);
-		Latch_Joystick control = new Latch_Joystick(0);
-		double magic = 1.0;*/
-//    	CameraInterface ci = CameraInterface.getInstance();
-    	//ci.set_mode(CameraInterface.CAMERA_MODE.MULTI);
-    	//ci.set_mode(CameraInterface.CAMERA_MODE.SINGLE); 4 or 5
-    	//BuiltInAccelerometer accel = new BuiltInAccelerometer();
-    	WPI_TalonSRX _grab_left;
-		WPI_TalonSRX _grab_right;
-		_grab_left = new WPI_TalonSRX(Map.ROLLER_TALON_PORT_LEFT);
-		_grab_right = new WPI_TalonSRX(Map.ROLLER_TALON_PORT_RIGHT);
-		Latch_Joystick _secondary = new Latch_Joystick(Map.DRIVE_SECONDARY_JOYSTICK);
+		System.out.println("Test Mode!");
+
     	while (isTest() && isEnabled())
     	{
-    		double speed = _secondary.getRawAxis(Map.INTAKE_POWER_AXIS);
-    		_grab_left.set(speed);
-    		_grab_right.set(-speed);
-    		
-    	    //Timer.delay(1000);
-    		//System.out.println("Test Mode!");
-    		/*if(control.getRawButton(1)) {
-    			_piston1.set(DoubleSolenoid.Value.kForward);
-    		} else if (control.getRawButton(2)) {
-    			_piston1.set(DoubleSolenoid.Value.kReverse);
-    		}
-    		
-    		if(control.getRawButton(1)){
-    			magic = 1.0;
-    		} else{
-    			magic = 2.0;
-    		}
-    		if (control.getRawButton(4)){
-    			_motor.set(control.getRawAxis(1)/magic*-1.0);
-    		}
-    		else if (control.getRawButton(5)){
-    			_motor.set(control.getRawAxis(1)/magic);
-    		}
-    		else{
-        		_motor.set(control.getRawAxis(1)/magic);
-    		}*/
-    		
-    		// Switch camera views every 5 seconds like a pro
-//    		ci.set_active_camera(ci.get_active_camera() == CameraInterface.CAMERAS.GEARSIDE ? CameraInterface.CAMERAS.INTAKESIDE : CameraInterface.CAMERAS.GEARSIDE);
-//            System.out.println("Switching active camera to " + ci.get_active_camera().toString());
-//            Timer.delay(5);
+			Elevator.getInstance().set(Elevator.ELEVATOR_MODE.HATCH, 0, true);
+			m_ds.waitForData(150); // Blocks until we get new data or 150ms elapse
+            _semaphore.newData();
+			// ?!?!
     	}
     }
 

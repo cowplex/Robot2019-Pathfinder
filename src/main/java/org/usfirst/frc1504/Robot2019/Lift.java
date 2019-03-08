@@ -81,11 +81,21 @@ public class Lift implements Updatable
 		DoubleSolenoid.Value front = DoubleSolenoid.Value.kReverse;
 		DoubleSolenoid.Value rear = DoubleSolenoid.Value.kReverse;
 
+		if(Math.abs(getAngle()) > 35.0)
+		{
+			System.out.println("Oh noes I fell over");
+			_state = LIFT_STATE.RETRACT;
+		}
+
 		if(_state == LIFT_STATE.EXTEND)
 			front = DoubleSolenoid.Value.kForward;
 		
 		if(_state == LIFT_STATE.EXTEND || _state == LIFT_STATE.FRONT_UP)
+		{
 			rear = DoubleSolenoid.Value.kForward;
+
+			Elevator.getInstance().set(Elevator.ELEVATOR_MODE.HATCH, 0, false);
+		}
 		
 		// Tip correction - Failsafe
 		if(_state == LIFT_STATE.EXTEND && Math.abs(getAngle()) > 10.0) // TIPPING A LOT
