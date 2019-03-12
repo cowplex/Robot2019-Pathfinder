@@ -140,7 +140,7 @@ public class Robot extends RobotBase {
 
 					//SmartDashboard.putNumber("Robot Voltage", RobotController.getBatteryVoltage());
 					//SmartDashboard.putNumber("Robot Time", m_ds.getMatchTime());
-					SmartDashboard.putNumber("Robot Current", pdp.getTotalCurrent());
+					//SmartDashboard.putNumber("Robot Current", pdp.getTotalCurrent());
 					//SmartDashboard.putNumber("Arm Power", _pickup.getPower());
 					SmartDashboard.putNumber("Pressure High", pressure_1.getAverageVoltage()*50 - 25);
 					SmartDashboard.putNumber("Pressure Low", pressure_2.getAverageVoltage()*50 - 25);
@@ -227,7 +227,7 @@ public class Robot extends RobotBase {
      */
     public void operatorControl() {
     	System.out.println("Operator Control");
-    	_arduino.setPulseSpeed(4);
+    	/*_arduino.setPulseSpeed(4);
         _arduino.setPartyMode(PARTY_MODE.OFF);
         if (_ds.getAlliance() == DriverStation.Alliance.Blue)
         	_arduino.setMainLightsColor(0, 255, 0);
@@ -235,7 +235,7 @@ public class Robot extends RobotBase {
         	_arduino.setMainLightsColor(0, 0, 255);
         else
         	_arduino.setMainLightsColor(255, 0, 0);
-    	_arduino.setGearLights(GEAR_MODE.INDIVIDUAL_INTENSITY, 0.5, 0.5);
+    	_arduino.setGearLights(GEAR_MODE.INDIVIDUAL_INTENSITY, 0.5, 0.5);*/
     }
 
     /**
@@ -285,7 +285,7 @@ public class Robot extends RobotBase {
                 disabled();
 				while (isDisabled())
 				{
-					m_ds.waitForData(150); // Blocks until we get new data or 150ms elapse
+					m_ds.waitForData(0.08); // Blocks until we get new data or 150ms elapse
                 	_semaphore.newData();
 				}
                     //Timer.delay(0.01);
@@ -310,7 +310,7 @@ public class Robot extends RobotBase {
                 operatorControl();
                 
                 while (!isDisabled()) {
-                	m_ds.waitForData(150); // Blocks until we get new data or 150ms elapse
+                	m_ds.waitForData(0.08); // Blocks until we get new data or 150ms elapse
                 	_semaphore.newData();
                     //Timer.delay(0.01);
                 }

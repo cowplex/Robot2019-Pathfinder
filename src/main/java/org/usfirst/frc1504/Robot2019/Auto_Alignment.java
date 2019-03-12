@@ -90,7 +90,7 @@ public class Auto_Alignment {
 		if(!sensor1.get()) 
 		{
 		  	if(!sensor5.get() || !sensor6.get()) 
-		  		return(FORWARD_CLOCKWISE);
+		  		return(FORWARD_COUNTERCLOCK);
 		  	else if(!sensor4.get())
 		  		return(FORWARD_LEFT);
 		  	else
@@ -98,8 +98,8 @@ public class Auto_Alignment {
 		}
 		if(!sensor3.get())
 		{
-		  	if(!sensor1.get() || !sensor4.get())
-		  		return(FORWARD_COUNTERCLOCK);
+		  	if(!sensor5.get() || !sensor4.get())
+		  		return(FORWARD_CLOCKWISE);
 		  	else if(!sensor6.get())
 		  		return(FORWARD_RIGHT);
 		  	else
@@ -108,9 +108,9 @@ public class Auto_Alignment {
 		if(!sensor2.get())
 		{
 		  	if(!sensor4.get())
-		  		return(FORWARD_COUNTERCLOCK);
-		  	else if(!sensor6.get())
 		  		return(FORWARD_CLOCKWISE);
+		  	else if(!sensor6.get())
+		  		return(FORWARD_COUNTERCLOCK);
 		  	else if(!sensor5.get())
 		  		return(FORWARD);
 		  	else 

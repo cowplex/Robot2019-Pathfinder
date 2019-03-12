@@ -1,6 +1,7 @@
 package org.usfirst.frc1504.Robot2019;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
 
 import org.usfirst.frc1504.Robot2019.Update_Semaphore.Updatable;
 
@@ -29,6 +30,7 @@ public class Elevator implements Updatable {
 	private int _override_setpoint_count = 0;
 
 	private WPI_TalonSRX _bottom_actuator;
+	//private CANSparkMax _bottom_actuator;
 	private WPI_TalonSRX _top_actuator;
 
 	public boolean lastElevatorButtonState = false;
@@ -53,6 +55,7 @@ public class Elevator implements Updatable {
 		_top_potentiometer = new AnalogPotentiometer(b, 100, 0);
 
 		_bottom_actuator = new WPI_TalonSRX(Map.BOTTOM_ACTUATOR_PORT);
+		//_bottom_actuator = new CANSparkMax(Map.BOTTOM_ACTUATOR_PORT, com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless);
 		_top_actuator = new WPI_TalonSRX(Map.TOP_ACTUATOR_PORT);
 
 		Preferences p = Preferences.getInstance();
@@ -127,6 +130,8 @@ public class Elevator implements Updatable {
 		
 		if(input != -1)
 			_elevator_enable = true;
+		if(Lift.getInstance().get_lifting())
+			_elevator_enable = false;
 
 		switch(input)
 		{
@@ -168,15 +173,18 @@ public class Elevator implements Updatable {
 		double top_error = (_top_setpoints[_setpoint][_mode.ordinal()] - _top_potentiometer.get());
 		double bottom_error = (_bottom_setpoints[_setpoint][_mode.ordinal()] - _bottom_potentiometer.get());
 		
-		if(top_error < 0.0 && _bottom_potentiometer.get() < Map.SWING_BOTTOM_SAFEZONE && Math.abs(bottom_error) > Map.SWING_SAFEZONE_TOLERANCE)
+		if(_mode == ELEVATOR_MODE.HATCH)
+			top_error += Math.abs(IO.get_intake_speed()) * 2.5;
+		
+		/*if(top_error < 0.0 && _bottom_potentiometer.get() < Map.SWING_BOTTOM_SAFEZONE && Math.abs(bottom_error) > Map.SWING_SAFEZONE_TOLERANCE)
 			_top_actuator.set(0.0);
-		else
+		else*/
 			_top_actuator.set(top_error * Map.ELEVATOR_GAIN);
 
 		// Don't run bottom actuator up unless the top arm won't intersect the post
-		if(bottom_error > 0.0 && _top_potentiometer.get() < Map.SWING_TOP_SAFEZONE && _top_actuator.get() != 0.0)
+		/*if(bottom_error > 0.0 && _top_potentiometer.get() < Map.SWING_TOP_SAFEZONE && _top_actuator.get() != 0.0)
 			_bottom_actuator.set(0.0);
-		else
+		else*/
 			_bottom_actuator.set(bottom_error * Map.ELEVATOR_GAIN);
 	}
 
@@ -211,7 +219,7 @@ public class Elevator implements Updatable {
 
 	public void semaphore_update() // updates robot information
 	{
-		update_dashboard();
+		update_dashboard();  
 
 		if (_ds.isDisabled()) // only runs in teleop
 		{
@@ -224,8 +232,13 @@ public class Elevator implements Updatable {
 		{
 			if(Hatch.getInstance().getState() == Hatch.HATCH_STATE.DISABLED)
 				return;
-			_mode = Hatch.getInstance().getState() == Hatch.HATCH_STATE.CLOSED ? ELEVATOR_MODE.CARGO : ELEVATOR_MODE.HATCH;
+			//_mode = Hatch.getInstance().getState() == Hatch.HATCH_STATE.CLOSED ? ELEVATOR_MODE.CARGO : ELEVATOR_MODE.HATCH;
+			_mode = ELEVATOR_MODE.HATCH;
 			compute_nearest_setpoint();
+			if(_mode == ELEVATOR_MODE.HATCH)
+			{
+				Auto_Alignment.alignment_state = Auto_Alignment.alignment_position.PLACEMENT_TRACKING;
+			}
 		}
 		
 		if(IO.override())

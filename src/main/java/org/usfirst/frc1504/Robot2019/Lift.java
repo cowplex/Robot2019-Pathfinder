@@ -59,7 +59,7 @@ public class Lift implements Updatable
 
 	public double getAngle()
 	{
-		return Math.atan2(-_accelerometer.getX(), _accelerometer.getY());
+		return Math.atan2(-_accelerometer.getX(), _accelerometer.getY()) * 180.0 / Math.PI;
 	}
 
 	private void servo_adjustment()
@@ -74,18 +74,23 @@ public class Lift implements Updatable
 			_front_servo.set(0.0);
 			_back_servo.set(0.0);
 		}
-	}	
+	}
+
+	public boolean get_lifting()
+	{
+		return _state == LIFT_STATE.EXTEND;
+	}
 
 	private void update_state()
 	{
 		DoubleSolenoid.Value front = DoubleSolenoid.Value.kReverse;
 		DoubleSolenoid.Value rear = DoubleSolenoid.Value.kReverse;
 
-		if(Math.abs(getAngle()) > 35.0)
+		/*if(Math.abs(getAngle()) > 35.0)
 		{
 			System.out.println("Oh noes I fell over");
 			_state = LIFT_STATE.RETRACT;
-		}
+		}*/
 
 		if(_state == LIFT_STATE.EXTEND)
 			front = DoubleSolenoid.Value.kForward;
@@ -97,14 +102,19 @@ public class Lift implements Updatable
 			Elevator.getInstance().set(Elevator.ELEVATOR_MODE.HATCH, 0, false);
 		}
 		
+		if(IO.hid() == 270)
+			front = DoubleSolenoid.Value.kReverse;
+		else if(IO.hid() == 90)
+			rear = DoubleSolenoid.Value.kReverse;
+
 		// Tip correction - Failsafe
-		if(_state == LIFT_STATE.EXTEND && Math.abs(getAngle()) > 10.0) // TIPPING A LOT
+		/*if(_state == LIFT_STATE.EXTEND && Math.abs(getAngle()) > 10.0) // TIPPING A LOT
 		{
-			if(Math.signum(getAngle()) > 0)
+			if(Math.signum(getAngle()) < 0)
 				front = DoubleSolenoid.Value.kReverse;
 			else
 				rear = DoubleSolenoid.Value.kReverse;
-		}
+		}*/
 		
 		_lift_front.set(front);
 		_lift_back.set(rear);
