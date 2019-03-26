@@ -159,7 +159,7 @@ public class Map {
 		public static final double[] TOP_PM_BALL_LEVELS = {13.8, 40.3, 63.9, 72.5, 58.8};
 
 		// Elevator 
-		public static final double ELEVATOR_GAIN = 0.35;
+		public static final double ELEVATOR_GAIN = 0.2;
 
 
 		
@@ -273,6 +273,7 @@ public class Map {
 	/**
 	 * Vision Interface stuff
 	 */
+	public static final int[] ALIGNMENT_SENSOR_MAP = {0,1,2,3,4,5};
 	public static final int sensor1 = 0;
 	public static final int sensor2 = 1;
 	public static final int sensor3 = 2;

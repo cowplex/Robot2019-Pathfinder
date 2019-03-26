@@ -87,7 +87,7 @@ public class Robot extends RobotBase {
 		Hatch.initialize();
 		Cargo.initialize();
 		 //   	//CameraServer.getInstance().startAutomaticCapture();
-    	System.out.println("Game specific message: "+_ds.getGameSpecificMessage()); 
+    	//System.out.println("Game specific message: "+_ds.getGameSpecificMessage()); 
     	//RRL - Right side switch (closer), Right side scale, Left side switch (farther)
     	//System.out.println(new String(Base64.getDecoder().decode(Map.TEAM_BANNER)));
     }
@@ -145,13 +145,13 @@ public class Robot extends RobotBase {
 					SmartDashboard.putNumber("Pressure High", pressure_1.getAverageVoltage()*50 - 25);
 					SmartDashboard.putNumber("Pressure Low", pressure_2.getAverageVoltage()*50 - 25);
 					
-					SmartDashboard.putBoolean("Alignment Good Configuration", Auto_Alignment.check_sensors());
+					/*SmartDashboard.putBoolean("Alignment Good Configuration", Auto_Alignment.check_sensors());
 					SmartDashboard.putBoolean("Alignment Sensor 1", !Auto_Alignment.sensor1.get());
 					SmartDashboard.putBoolean("Alignment Sensor 2", !Auto_Alignment.sensor2.get());
 					SmartDashboard.putBoolean("Alignment Sensor 3", !Auto_Alignment.sensor3.get());
 					SmartDashboard.putBoolean("Alignment Sensor 4", !Auto_Alignment.sensor4.get());
 					SmartDashboard.putBoolean("Alignment Sensor 5", !Auto_Alignment.sensor5.get());
-					SmartDashboard.putBoolean("Alignment Sensor 6", !Auto_Alignment.sensor6.get());
+					SmartDashboard.putBoolean("Alignment Sensor 6", !Auto_Alignment.sensor6.get());*/
 					//SmartDashboard.putBoolean("Hatch Indicator", Arms.grabstate);
 
 					/*
@@ -248,7 +248,7 @@ public class Robot extends RobotBase {
     	while (isTest() && isEnabled())
     	{
 			Elevator.getInstance().set(Elevator.ELEVATOR_MODE.HATCH, 0, true);
-			m_ds.waitForData(150); // Blocks until we get new data or 150ms elapse
+			m_ds.waitForData(.150); // Blocks until we get new data or 150ms elapse
             _semaphore.newData();
 			// ?!?!
     	}
@@ -285,7 +285,7 @@ public class Robot extends RobotBase {
                 disabled();
 				while (isDisabled())
 				{
-					m_ds.waitForData(0.08); // Blocks until we get new data or 150ms elapse
+					m_ds.waitForData(0.15); // Blocks until we get new data or 150ms elapse
                 	_semaphore.newData();
 				}
                     //Timer.delay(0.01);
@@ -310,7 +310,7 @@ public class Robot extends RobotBase {
                 operatorControl();
                 
                 while (!isDisabled()) {
-                	m_ds.waitForData(0.08); // Blocks until we get new data or 150ms elapse
+                	m_ds.waitForData(0.15); // Blocks until we get new data or 150ms elapse
                 	_semaphore.newData();
                     //Timer.delay(0.01);
                 }
