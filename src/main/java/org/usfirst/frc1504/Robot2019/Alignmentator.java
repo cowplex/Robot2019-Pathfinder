@@ -64,15 +64,14 @@ public class Alignmentator
 				while(!_run_sequence)
 					Timer.delay(.02);
 				
-				if(_run_sequence)
+				_state = PICKPLACE_STATE.MANIPULATOR;
+				Timer.delay(.4);
+
+				_state = PICKPLACE_STATE.REVERSE;
+				for(int i = 0; i < 15 && _run_sequence; i++)
 				{
-					_state = PICKPLACE_STATE.MANIPULATOR;
-					Timer.delay(.4);
-				}
-				if(_run_sequence)
-				{
-					_state = PICKPLACE_STATE.REVERSE;
-					Timer.delay(1.5);
+					Timer.delay(0.1);
+					_run_sequence = IO.get_auto_alignment() || IO.get_auto_placement();
 				}
 
 				_run_sequence = false;
@@ -159,6 +158,11 @@ public class Alignmentator
 				return false;
 		}
 		return true;
+	}
+
+	public boolean[] get_sensor_array()
+	{
+		return _sensors.get_array();
 	}
 
 	public ALIGNMENTATOR_STATUS status()
