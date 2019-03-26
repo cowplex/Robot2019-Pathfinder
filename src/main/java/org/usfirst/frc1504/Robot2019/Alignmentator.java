@@ -116,7 +116,7 @@ public class Alignmentator
 	{
 		_sensors.update();
 
-		if(IO.get_auto_alignment() && !_last_button)
+		if((IO.get_auto_alignment() || IO.get_auto_placement()) && !_last_button)
 		{
 			if(_hatch.getState() == HATCH_STATE.HOLDING || Elevator.getInstance().getMode() == ELEVATOR_MODE.CARGO)
 				_state = ALIGNMENTATOR_STATUS.PLACEMENT_TRACKING;
@@ -130,7 +130,13 @@ public class Alignmentator
 			_task.run_sequence();
 		}
 
-		_last_button = IO.get_auto_alignment();
+		if(IO.get_auto_placement() && !_last_button && _state == ALIGNMENTATOR_STATUS.PLACEMENT_TRACKING)
+		{
+			_state = ALIGNMENTATOR_STATUS.PLACEMENT;
+			_task.run_sequence();
+		}
+
+		_last_button = IO.get_auto_alignment() || IO.get_auto_placement();
 		_last_hatch = _hatch.getHatchInput();
 	}
 
@@ -160,6 +166,11 @@ public class Alignmentator
 		return _state;
 	}
 
+	public PICKPLACE_STATE pickplace_status()
+	{
+		return _task.get_state();
+	}
+
 	public double[] drive()
 	{
 		double[] moves = {0.0, 0.0, 0.0};
@@ -181,6 +192,8 @@ public class Alignmentator
 				moves[0] = -.3;
 				return moves;
 			}
+
+			return moves;
 			//if(_task.get_state() == PICKPLACE_STATE.DISABLED)
 			//	_state = ALIGNMENTATOR_STATUS.
 		}

@@ -10,6 +10,7 @@ import java.lang.Math;
 import org.usfirst.frc1504.Robot2019.Update_Semaphore.Updatable;
 import org.usfirst.frc1504.Robot2019.Lift;
 import org.usfirst.frc1504.Robot2019.Alignmentator.ALIGNMENTATOR_STATUS;
+import org.usfirst.frc1504.Robot2019.Alignmentator.PICKPLACE_STATE;
 
 //import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -246,17 +247,19 @@ public class Drive implements Updatable
 //					input =  Auto_Alignment.auto_alignment();
 //				}
 				_alignmentator.update();
-				if(IO.get_auto_alignment() && (_alignmentator.get_sensor_good() || _alignmentator.status() == ALIGNMENTATOR_STATUS.PICKUP || _alignmentator.status() == ALIGNMENTATOR_STATUS.PLACEMENT))
-				//if((IO.get_auto_alignment() || IO.get_auto_placement()))
+				//if(IO.get_auto_alignment() && (_alignmentator.get_sensor_good() || _alignmentator.status() == ALIGNMENTATOR_STATUS.PICKUP || _alignmentator.status() == ALIGNMENTATOR_STATUS.PLACEMENT))
+				//	input = orbit_point(_alignmentator.drive());
+
+				if((IO.get_auto_alignment() || IO.get_auto_placement()) || _alignmentator.pickplace_status() == PICKPLACE_STATE.MANIPULATOR)
 				{
-					/*if(IO.get_auto_placement() && _alignmentator.status() == ALIGNMENTATOR_STATUS.PICKUP)
+					if(!IO.get_auto_alignment() && IO.get_auto_placement() && _alignmentator.pickplace_status() == PICKPLACE_STATE.DISABLED)
 					{
 						//nuttin
 					}
 					else
-					{*/
+					{
 						input = orbit_point(_alignmentator.drive());
-					//}
+					}
 				}
 				//double driveinputsblah[] = {0.5,0.0,0.0};
 				//input = driveinputsblah;
