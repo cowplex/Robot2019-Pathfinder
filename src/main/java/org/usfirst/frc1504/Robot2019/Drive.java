@@ -256,7 +256,7 @@ public class Drive implements Updatable
 					{
 						//nuttin
 					}
-					else
+					else if(_alignmentator.get_sensor_good())
 					{
 						input = orbit_point(_alignmentator.drive());
 					}

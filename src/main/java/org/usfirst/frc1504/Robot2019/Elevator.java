@@ -3,6 +3,7 @@ package org.usfirst.frc1504.Robot2019;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANEncoder;
 
 import org.usfirst.frc1504.Robot2019.Update_Semaphore.Updatable;
 
@@ -43,6 +44,9 @@ public class Elevator implements Updatable {
 
 	private Potentiometer _bottom_potentiometer;
 	private Potentiometer _top_potentiometer;
+	private CANEncoder _bottom_encoder;
+	private CANEncoder _top_encoder;
+
 
 	public static Elevator getInstance() // sets instance
 	{
@@ -66,6 +70,12 @@ public class Elevator implements Updatable {
 		_bottom_actuator = new CANSparkMax(Map.BOTTOM_ACTUATOR_PORT, com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless);
 		_top_actuator.setIdleMode(CANSparkMax.IdleMode.kCoast);
 		_bottom_actuator.setIdleMode(CANSparkMax.IdleMode.kCoast);
+		_top_encoder = _top_actuator.getEncoder();
+		_bottom_encoder = _bottom_actuator.getEncoder();
+		_top_encoder.setPositionConversionFactor((10.0 * 14.0)/(2.5 * 96.0));    // 2.5:1 linear actuator
+		_bottom_encoder.setPositionConversionFactor((10.0 * 14.0)/(2.5 * 96.0)); // 2.5:1 linear actuator
+		_top_encoder.setPosition(_top_potentiometer.get());
+		_bottom_encoder.setPosition(_bottom_potentiometer.get());
 
 		Preferences p = Preferences.getInstance();
 		int i, j;
@@ -176,6 +186,11 @@ public class Elevator implements Updatable {
 
 	private void update()
 	{
+		// Disable elevator if encoder and potentiometer drift too far apart
+		if(	Math.abs(_top_encoder.getPosition() - _top_potentiometer.get()) > 3.0 ||
+			Math.abs(_bottom_encoder.getPosition() - _bottom_potentiometer.get()) > 3.0)
+			_elevator_enable = false;
+		
 		if(!_elevator_enable || _mode == ELEVATOR_MODE.INIT)
 		{
 			//_top_actuator.set(0.0);
@@ -183,18 +198,20 @@ public class Elevator implements Updatable {
 			return;
 		}
 		
-		double top_error = (_top_setpoints[_setpoint][_mode.ordinal()] - _top_potentiometer.get());
-		double bottom_error = (_bottom_setpoints[_setpoint][_mode.ordinal()] - _bottom_potentiometer.get());
+		//double top_error = (_top_setpoints[_setpoint][_mode.ordinal()] - _top_potentiometer.get());
+		//double bottom_error = (_bottom_setpoints[_setpoint][_mode.ordinal()] - _bottom_potentiometer.get());
+		double top_error = (_top_setpoints[_setpoint][_mode.ordinal()] - _top_encoder.getPosition());
+		double bottom_error = (_bottom_setpoints[_setpoint][_mode.ordinal()] - _bottom_encoder.getPosition());
 		
 		top_error = Math.pow(top_error / 1.4, 2.0) * Math.signum(top_error);
 		bottom_error = Math.pow(bottom_error  / 1.4, 2.0) * Math.signum(bottom_error);
 
 		if(_mode == ELEVATOR_MODE.HATCH)
-			top_error += Math.abs(IO.get_intake_speed()) * 2.5;
+			top_error += /*Math.abs*/(IO.get_intake_speed()) * 1.5;//2.5;
 		
-		if(Math.abs(top_error) < 1.1)
+		if(Math.abs(top_error) < 2.0)
 			top_error = 0.0;
-		if(Math.abs(bottom_error) < 1.1)
+		if(Math.abs(bottom_error) < 2.0)
 			bottom_error = 0.0;
 		
 		/*if(top_error < 0.0 && _bottom_potentiometer.get() < Map.SWING_BOTTOM_SAFEZONE && Math.abs(bottom_error) > Map.SWING_SAFEZONE_TOLERANCE)
@@ -218,6 +235,8 @@ public class Elevator implements Updatable {
 		SmartDashboard.putString("Elevator Setpoint Name", _setpoint_names[_setpoint]);
 		SmartDashboard.putNumber("Elevator Top Actuator Position", _top_potentiometer.get());
 		SmartDashboard.putNumber("Elevator Bottom Actuator Position", _bottom_potentiometer.get());
+		SmartDashboard.putNumber("Elevator Top Encoder Position", _top_encoder.getPosition());
+		SmartDashboard.putNumber("Elevator Bottom Encoder Position", _bottom_encoder.getPosition());
 		SmartDashboard.putNumber("Elevator Top Actuator Current", _top_actuator.getOutputCurrent());
 		SmartDashboard.putNumber("Elevator Bottom Actuator Current", _bottom_actuator.getOutputCurrent());
 		SmartDashboard.putNumber("Elevator Top Actuator Speed", _top_actuator.getEncoder().getVelocity());

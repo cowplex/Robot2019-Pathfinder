@@ -194,6 +194,8 @@ public class Alignmentator
 			if(_task.get_state() == PICKPLACE_STATE.REVERSE)
 			{
 				moves[0] = -.3;
+				if(_state == ALIGNMENTATOR_STATUS.PLACEMENT)
+					moves[0] /= 2.0;
 				return moves;
 			}
 
@@ -216,6 +218,8 @@ public class Alignmentator
 		moves[0] *= 0.125;
 		moves[1] *= 0.15;
 		moves[2] *= 0.15;
+
+		moves[1] += -moves[2] * 0.6;
 
 		return moves;
 
