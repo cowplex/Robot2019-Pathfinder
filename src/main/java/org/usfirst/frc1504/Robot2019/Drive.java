@@ -209,6 +209,7 @@ public class Drive implements Updatable
 		double[] output = new double[4];
 		while(_thread_alive)
 		{
+			_alignmentator.update();
 			input = _input;
 			if(input.length < 3 || _input.length < 3)
 			{
@@ -246,17 +247,19 @@ public class Drive implements Updatable
 //				{
 //					input =  Auto_Alignment.auto_alignment();
 //				}
-				_alignmentator.update();
 				//if(IO.get_auto_alignment() && (_alignmentator.get_sensor_good() || _alignmentator.status() == ALIGNMENTATOR_STATUS.PICKUP || _alignmentator.status() == ALIGNMENTATOR_STATUS.PLACEMENT))
 				//	input = orbit_point(_alignmentator.drive());
 
 				if((IO.get_auto_alignment() || IO.get_auto_placement()) || _alignmentator.pickplace_status() == PICKPLACE_STATE.MANIPULATOR)
 				{
-					if(!IO.get_auto_alignment() && IO.get_auto_placement() && _alignmentator.pickplace_status() == PICKPLACE_STATE.DISABLED)
+					if(
+						(IO.get_auto_alignment() && !_alignmentator.get_sensor_good()) || 
+						(IO.get_auto_placement() && _alignmentator.pickplace_status() == PICKPLACE_STATE.DISABLED)
+					  )
 					{
 						//nuttin
 					}
-					else if(_alignmentator.get_sensor_good())
+					else
 					{
 						input = orbit_point(_alignmentator.drive());
 					}

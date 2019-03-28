@@ -120,7 +120,7 @@ public class Alignmentator
 			if(_hatch.getState() == HATCH_STATE.HOLDING || Elevator.getInstance().getMode() == ELEVATOR_MODE.CARGO)
 				_state = ALIGNMENTATOR_STATUS.PLACEMENT_TRACKING;
 			else
-			_state = ALIGNMENTATOR_STATUS.PICKUP_TRACKING;
+				_state = ALIGNMENTATOR_STATUS.PICKUP_TRACKING;
 		}
 
 		if(_hatch.getHatchInput() && !_last_hatch && _state == ALIGNMENTATOR_STATUS.PICKUP_TRACKING)
@@ -219,7 +219,14 @@ public class Alignmentator
 		moves[1] *= 0.15;
 		moves[2] *= 0.15;
 
-		moves[1] += -moves[2] * 0.6;
+		moves[1] += -moves[2] * 0.6; // Adds some tracking in to if a single side is activated
+
+		if(_state == ALIGNMENTATOR_STATUS.PLACEMENT_TRACKING) // prioritize forward motion w/ minimal side jitter when placing
+		{
+			moves[0] *= 2.0;
+			moves[1] *= 0.8;
+			moves[2] *= 0.7;
+		}
 
 		return moves;
 

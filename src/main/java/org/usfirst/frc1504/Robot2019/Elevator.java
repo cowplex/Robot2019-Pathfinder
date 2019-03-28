@@ -207,7 +207,7 @@ public class Elevator implements Updatable {
 		bottom_error = Math.pow(bottom_error  / 1.4, 2.0) * Math.signum(bottom_error);
 
 		if(_mode == ELEVATOR_MODE.HATCH)
-			top_error += /*Math.abs*/(IO.get_intake_speed()) * 1.5;//2.5;
+			top_error += /*Math.abs*/(IO.get_intake_speed()) * 2.5;//2.5;
 		
 		if(Math.abs(top_error) < 2.0)
 			top_error = 0.0;
@@ -217,13 +217,13 @@ public class Elevator implements Updatable {
 		/*if(top_error < 0.0 && _bottom_potentiometer.get() < Map.SWING_BOTTOM_SAFEZONE && Math.abs(bottom_error) > Map.SWING_SAFEZONE_TOLERANCE)
 			_top_actuator.set(0.0);
 		else*/
-			_top_actuator.set(top_error * Map.ELEVATOR_GAIN * (Math.signum(top_error) < 0.0 ? 0.5 : 1.0));
+			_top_actuator.set(top_error * Map.ELEVATOR_GAIN * (Math.signum(top_error) < 0.0 ? 0.3 : 0.8));
 
 		// Don't run bottom actuator up unless the top arm won't intersect the post
 		/*if(bottom_error > 0.0 && _top_potentiometer.get() < Map.SWING_TOP_SAFEZONE && _top_actuator.get() != 0.0)
 			_bottom_actuator.set(0.0);
 		else*/
-			_bottom_actuator.set(bottom_error * Map.ELEVATOR_GAIN * (Math.signum(bottom_error) < 0.0 ? 0.5 : 1.0));
+			_bottom_actuator.set(bottom_error * Map.ELEVATOR_GAIN * (Math.signum(bottom_error) < 0.0 ? 0.3 : 0.8));
 	}
 
 	private void update_dashboard()
