@@ -79,8 +79,8 @@ public class Elevator implements Updatable {
 		_top_encoder.setPosition(_top_potentiometer.get());
 		_bottom_encoder.setPosition(_bottom_potentiometer.get());
 
-		_top_glide = new Glide(.01, .1);
-		_bottom_glide = new Glide(.01, .1);
+		_top_glide = new Glide(.007, .025);
+		_bottom_glide = new Glide(.007, .025);
 
 		Preferences p = Preferences.getInstance();
 		int i, j;
@@ -296,6 +296,9 @@ public class Elevator implements Updatable {
 			_elevator_enable = false;
 			_bottom_actuator.set(IO.get_bottom_actuator_speed() * .7);
 			_top_actuator.set(IO.get_top_actuator_speed() * .7);
+
+			_top_encoder.setPosition(_top_potentiometer.get());
+			_bottom_encoder.setPosition(_bottom_potentiometer.get());
 
 			if(_mode != ELEVATOR_MODE.INIT)
 			{
