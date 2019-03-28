@@ -104,9 +104,9 @@ public class Alignmentator
 
     private Alignmentator()
     {	
-		_task = new Align_Thread();
-		_task_thread = new Thread(_task, "1504_Alignmentator Task Thread");
-		_task_thread.start();
+				_task = new Align_Thread();
+				_task_thread = new Thread(_task, "1504_Alignmentator Task Thread");
+				_task_thread.start();
 
         System.out.println("Alignmentator initialized");
 	}

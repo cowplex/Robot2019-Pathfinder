@@ -112,6 +112,16 @@ public class Elevator implements Updatable {
 		return _mode;
 	}
 
+	public boolean getMoving()
+	{
+		return _moving;
+	}
+
+	public int getSetpoint()
+	{
+		return _setpoint;
+	}
+
 	private void compute_nearest_setpoint()
 	{
 		int i;
@@ -203,6 +213,7 @@ public class Elevator implements Updatable {
 				_top_actuator.set(0.0);
 				_bottom_actuator.set(0.0);
 			}
+			_moving = false;
 			return;
 		}
 		
@@ -221,6 +232,11 @@ public class Elevator implements Updatable {
 			top_error = 0.0;
 		if(Math.abs(bottom_error) < 1.0)
 			bottom_error = 0.0;
+
+		if(top_error == 0 && bottom_error == 0)
+			_moving = false;
+		else
+			_moving = true;
 		
 		/*if(top_error < 0.0 && _bottom_potentiometer.get() < Map.SWING_BOTTOM_SAFEZONE && Math.abs(bottom_error) > Map.SWING_SAFEZONE_TOLERANCE)
 			_top_actuator.set(0.0);

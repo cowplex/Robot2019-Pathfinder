@@ -60,8 +60,6 @@ public class Drive implements Updatable
 
 	private double[] _orbit_magic_numbers = new double[6];
 	
-	private ArrayList<Integer> autonDistances = new ArrayList<Integer>();
-	private ArrayList<Long> autonTimes = new ArrayList<Long>();
 	/**
 	 * gets the instance of the drive.
 	 * @return the drive
@@ -137,6 +135,7 @@ public class Drive implements Updatable
 	//public static AnalogInput sanic = new AnalogInput(3);
 
 	private Alignmentator _alignmentator = Alignmentator.getInstance();
+	private boolean _alignmentating = false;
 
 	/**
 	 * set up motors
@@ -258,11 +257,17 @@ public class Drive implements Updatable
 					  )
 					{
 						//nuttin
+						_alignmentating = false;
 					}
 					else
 					{
+						_alignmentating = true;
 						input = orbit_point(_alignmentator.drive());
 					}
+				}
+				else
+				{
+					_alignmentating = false;
 				}
 				//double driveinputsblah[] = {0.5,0.0,0.0};
 				//input = driveinputsblah;
@@ -495,7 +500,7 @@ public class Drive implements Updatable
 	double initialSpike = 0.0;
 	double highestTravelingSpike = 0.0;
 	double accelSign = -1.0;
-	public double[] roborio_crash_bandicoot_check(double[] input, long time, int type) {//uses roborio built in accelerometer
+	private double[] roborio_crash_bandicoot_check(double[] input, long time, int type) {//uses roborio built in accelerometer
 		double[] null_response = {0.0, 0.0, 0.0, 0, 0};
 		double robot_accel = 0;
 		if(type == 1)
@@ -578,11 +583,11 @@ public class Drive implements Updatable
 		return input;
 	} //simple crash detection, no lin reg
 	 */
-	public void spike_reset() {
+	private void spike_reset() {
 		initialSpike = 0.0;
 		highestTravelingSpike = 0.0;
 	}
-	public int sanic_value() {
+	private int sanic_value() {
 			return 1;
 	}	
 	
@@ -689,8 +694,13 @@ public class Drive implements Updatable
 	
 		return computed;
 	}
+
+	public boolean line_tracking()
+	{
+		return _alignmentating;
+	}
 	
-	public double[] follow_angle(double angle, double speed)
+	private double[] follow_angle(double angle, double speed)
 	{
 		
         double angle_a = Math.toRadians(angle);
