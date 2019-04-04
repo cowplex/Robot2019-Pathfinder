@@ -2,9 +2,12 @@ package org.usfirst.frc1504.Robot2019;
 
 import org.usfirst.frc1504.Robot2019.Update_Semaphore.Updatable;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
+import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Servo;
 
@@ -27,6 +30,11 @@ public class Lift implements Updatable
 	private BuiltInAccelerometer _accelerometer = new BuiltInAccelerometer(Accelerometer.Range.k8G);
 	private Servo _front_servo;
 	private Servo _back_servo;
+	private AnalogInput _front_analog;
+	private AnalogInput _back_analog;
+	private AnalogPotentiometer _front_position;
+	private AnalogPotentiometer _back_position;
+	private double _front_offset, _back_offset;
 	
     public static Lift getInstance() // sets instance
 	{
@@ -40,6 +48,11 @@ public class Lift implements Updatable
 		
 		_front_servo = new Servo(Map.LEFT_SERVO_PORT);
 		_back_servo = new Servo(Map.RIGHT_SERVO_PORT);
+
+		_front_analog = new AnalogInput(4);
+		_back_analog  = new AnalogInput(5);
+		_front_position = new AnalogPotentiometer(_front_analog, 100.0);
+		_back_position  = new AnalogPotentiometer(_back_analog,  100.0);
 
 		_lockout = false;
         
@@ -59,7 +72,7 @@ public class Lift implements Updatable
 
 	public double getAngle()
 	{
-		return Math.atan2(-_accelerometer.getX(), _accelerometer.getY()) * 180.0 / Math.PI;
+		return (_front_position.get() - _front_offset) - (_back_position.get() - _back_offset);
 	}
 
 	private void servo_adjustment()
@@ -73,6 +86,8 @@ public class Lift implements Updatable
 		{
 			_front_servo.set(0.0);
 			_back_servo.set(0.0);
+			_front_offset = _front_servo.get();
+			_back_offset = _back_servo.get();
 		}
 	}
 
@@ -86,11 +101,17 @@ public class Lift implements Updatable
 		DoubleSolenoid.Value front = DoubleSolenoid.Value.kReverse;
 		DoubleSolenoid.Value rear = DoubleSolenoid.Value.kReverse;
 
-		/*if(Math.abs(getAngle()) > 35.0)
+		if(Math.abs(getAngle()) > 25.0)
 		{
-			System.out.println("Oh noes I fell over");
+			System.out.println("!!! !!! !!! Oh noes I fell over !!! !!! !!!");
 			_state = LIFT_STATE.RETRACT;
-		}*/
+		}
+
+		if(_state == LIFT_STATE.RETRACT)
+		{
+			_front_offset = _front_position.get();
+			_back_offset = _back_position.get();
+		}
 
 		if(_state == LIFT_STATE.EXTEND)
 			front = DoubleSolenoid.Value.kForward;
@@ -102,10 +123,10 @@ public class Lift implements Updatable
 			Elevator.getInstance().set(Elevator.ELEVATOR_MODE.HATCH, 0, false);
 		}
 		
-		if(IO.hid() == 270)
+		/*if(IO.hid() == 270)
 			front = DoubleSolenoid.Value.kReverse;
 		else if(IO.hid() == 90)
-			rear = DoubleSolenoid.Value.kReverse;
+			rear = DoubleSolenoid.Value.kReverse;*/
 
 		// Tip correction - Failsafe
 		/*if(_state == LIFT_STATE.EXTEND && Math.abs(getAngle()) > 10.0) // TIPPING A LOT

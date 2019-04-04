@@ -170,12 +170,37 @@ public class Robot extends RobotBase {
 					/*
 					 * Borrowed from Mike
 					 */	
-					//-edge_track = (char)( ( (edge_track << 1) + (HALUtil.getFPGAButton() ? 1 : 0) ) & 3);
-					//-if(edge_track == 1) // Get image from groundtruth sensors, output it to the DS
-					//-{
-					//-	SmartDashboard.putString("Groundtruth raw image", new String(_arduino.getSensorImage()));
-					//-}
-						Timer.delay(0.02);
+					edge_track = (char)( ( (edge_track << 1) + (HALUtil.getFPGAButton() ? 1 : 0) ) & 3);
+					if(edge_track == 1) // Get image from groundtruth sensors, output it to the DS
+					{
+						//SmartDashboard.putString("Groundtruth raw image", new String(_arduino.getSensorImage()));
+						
+						_arduino.update(!_arduino.update());
+						if(_arduino.update() && _ds.isDisabled())
+							disabled();
+						else if(_arduino.update())
+							operatorControl();
+					}
+					
+					// Diagnostic - flashes colors in sequence to debug light colors
+					if(!_arduino.update())
+					{
+						_arduino.setPartyMode(false);
+						_arduino.setArmLightsState(false);
+						_arduino.setPostLightsState(false);
+
+						_arduino.setArmLightsColor(255, 0, 0);
+						_arduino.setPostLightsColor(255, 0, 0);
+						Timer.delay(1.0);
+						_arduino.setArmLightsColor(0, 255, 0);
+						_arduino.setPostLightsColor(0, 255, 0);
+						Timer.delay(1.0);
+						_arduino.setArmLightsColor(0, 0, 255);
+						_arduino.setPostLightsColor(0, 0, 255);
+						Timer.delay(1.0);
+					}
+					
+					Timer.delay(0.02);
 				}
 			}
 		});
@@ -195,7 +220,7 @@ public class Robot extends RobotBase {
     protected void disabled() {
         System.out.println("Robot Disabled");
         _arduino.setPartyMode(true);
-        _arduino.setPulseSpeed(1);
+		_arduino.setPulseSpeed(1);
     }
 
     /**

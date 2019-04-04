@@ -13,7 +13,7 @@ public class Arduino
 	
 	private Arduino()
 	{
-		_lights = new Lights_Thread();
+		_lights = new Lights_Thread(this);
 		_task_thread = new Thread(_lights, "1504_Arduino Lights Task Thread");
 		_task_thread.start();
 
@@ -33,13 +33,13 @@ public class Arduino
 
 	private class Lights_Thread implements Runnable
 	{
-		private int[][] _arm_colors = {{255,115,0}, {255,255,0}, {255,105,180}, {255,0,255}, {64,224,208}};
+		private int[][] _arm_colors = {{255,180,0}, {255,80,0}, {255,90,120}, {255,0,255}, {64,224,208}};
 		private int[][] _post_colors = {{103,255,0}, {255,15,2}, {255,0,230}, {160,255,141}};
 
-		private Arduino _arduino;
-		private Hatch _hatch;
-		private Elevator _elevator;
-		private Drive _drive;
+		private Arduino _arduino;// = Arduino.getInstance();
+		private Hatch _hatch;// = Hatch.getInstance();
+		private Elevator _elevator;// = Elevator.getInstance();
+		private Drive _drive;// = Drive.getInstance();
 
 		private Hatch.HATCH_STATE _last_hatch = null;
 		private Elevator.ELEVATOR_MODE _last_elevator_mode = null;
@@ -47,19 +47,43 @@ public class Arduino
 		private boolean _last_elevator_moving;
 		private boolean _last_drive;
 
-		Lights_Thread()
+		private boolean _update = true;
+
+		Lights_Thread(Arduino arduino)
 		{
-			_arduino = Arduino.getInstance();
-			_hatch = Hatch.getInstance();
-			_elevator = Elevator.getInstance();
-			_drive = Drive.getInstance();
+			_arduino = arduino;
+		}
+
+		public void update(boolean update)
+		{
+			_update = update;
+		}
+
+		public boolean update()
+		{
+			return _update;
 		}
 		
 		public void run()
 		{
+			while(_hatch == null || _elevator == null || _drive == null)
+			{
+				_hatch = Hatch.getInstance();
+				_elevator = Elevator.getInstance();
+				_drive = Drive.getInstance();
+				Timer.delay(.08);
+			}
+
 			System.out.println("Lights task thread initialized");
+
 			while(true)
 			{
+				if(!_update)
+				{
+					Timer.delay(.3);
+					continue;
+				}
+				
 				// Set post color
 				if(_hatch.getState() != _last_hatch || _last_elevator_mode != _elevator.getMode())
 				{
@@ -81,7 +105,7 @@ public class Arduino
 
 				// Blink if arms are in motion
 				if(_last_elevator_moving != _elevator.getMoving())
-					_arduino.setArmLightsState(!_elevator.getMoving());
+					_arduino.setArmLightsState(_elevator.getMoving());
 
 				// Blink if we're auto-aligning
 				if(_last_drive != _drive.line_tracking())
@@ -153,6 +177,20 @@ public class Arduino
 	}
 
 /**
+ * Sets the automatic update state
+ * @param update: automatic update of lights
+ */
+	public void update(boolean update)
+	{
+		_lights.update(update);
+	}
+
+	public boolean update()
+	{
+		return _lights.update();
+	}
+
+/**
  * Sets the color of the arm lights
  * @param R: integer from 0-255 indicating amount of red in the color
  * @param G: integer from 0-255 indicating amount of green in the color
@@ -163,9 +201,9 @@ public class Arduino
 		byte[] data = new byte[4];
 		
 		data[0] = Map.ARM_LIGHTS_ADDRESS;
-		data[1] = (byte) R;
-		data[2] = (byte) G;
-		data[3] = (byte) B;
+		data[3] = (byte) R;
+		data[1] = (byte) G;
+		data[2] = (byte) B;
 		
 		_bus.writeBulk(data);
 	}
@@ -181,8 +219,8 @@ public class Arduino
 		byte[] data = new byte[4];
 		
 		data[0] = Map.POST_LIGHTS_ADDRESS;
-		data[1] = (byte) R;
-		data[2] = (byte) G;
+		data[2] = (byte) R;
+		data[1] = (byte) G;
 		data[3] = (byte) B;
 		
 		_bus.writeBulk(data);

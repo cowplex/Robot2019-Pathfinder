@@ -72,6 +72,11 @@ public class IO
 		 (_drive_rotation.getRawButton(Map.LIFT_SEQUENCE_SECOND_BUTTON) ? 2 : 0);
 	}
 
+	public static boolean lift_level_3()
+	{
+		return _drive_rotation.getThrottle() > 0.5;
+	}
+
 	public static double get_intake_speed()
 	{
 		return _secondary.getRawAxis(Map.FORWARD_ROTORS) - _secondary.getRawAxis(Map.REVERSE_ROTORS);
