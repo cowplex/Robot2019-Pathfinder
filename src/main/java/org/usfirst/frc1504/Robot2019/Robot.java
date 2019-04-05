@@ -163,9 +163,7 @@ public class Robot extends RobotBase {
 					
 					//SmartDashboard.putBoolean("Pressure", c.getPressureSwitchValue());
 					//SmartDashboard.putNumber("Pressure", c.getCompressorCurrent());
-					
-					//SmartDashbaord.putNumber("", );
-					
+										
 					
 					/*
 					 * Borrowed from Mike
@@ -175,29 +173,7 @@ public class Robot extends RobotBase {
 					{
 						//SmartDashboard.putString("Groundtruth raw image", new String(_arduino.getSensorImage()));
 						
-						_arduino.update(!_arduino.update());
-						if(_arduino.update() && _ds.isDisabled())
-							disabled();
-						else if(_arduino.update())
-							operatorControl();
-					}
-					
-					// Diagnostic - flashes colors in sequence to debug light colors
-					if(!_arduino.update())
-					{
-						_arduino.setPartyMode(false);
-						_arduino.setArmLightsState(false);
-						_arduino.setPostLightsState(false);
-
-						_arduino.setArmLightsColor(255, 0, 0);
-						_arduino.setPostLightsColor(255, 0, 0);
-						Timer.delay(1.0);
-						_arduino.setArmLightsColor(0, 255, 0);
-						_arduino.setPostLightsColor(0, 255, 0);
-						Timer.delay(1.0);
-						_arduino.setArmLightsColor(0, 0, 255);
-						_arduino.setPostLightsColor(0, 0, 255);
-						Timer.delay(1.0);
+						_arduino.diagnostic(!_arduino.diagnostic());
 					}
 					
 					Timer.delay(0.02);
@@ -231,7 +207,8 @@ public class Robot extends RobotBase {
      * Called once each time the robot enters the operator-controlled state.
      */
     public void operatorControl() {
-    	System.out.println("Operator Control");
+		System.out.println("Operator Control");
+		_arduino.diagnostic(false);
     	_arduino.setPulseSpeed(20);
         _arduino.setPartyMode(false);
         /*if (_ds.getAlliance() == DriverStation.Alliance.Blue)
@@ -267,16 +244,6 @@ public class Robot extends RobotBase {
      * either the other mode starts or the robot is disabled. Then go back and wait for the robot
      * to be enabled again.
      */
-	
-    @Override
-    //public void teleopPeriodic() {
-	//	Scheduler.getInstance().run();
-	//	if (isOperatorControl() && !isDisabled()) {
-	//		m_ds.waitForData(150); // Blocks until we get new data or 150ms elapse
-	//		_semaphore.newData();
-	//		//Timer.delay(0.01);
-	//	}
-    //}
 
     public void startCompetition() {
         //HAL.report(tResourceType.kResourceType_Framework,tInstances.kFramework_Simple);

@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
-import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Servo;
 
@@ -77,17 +76,31 @@ public class Lift implements Updatable
 
 	private void servo_adjustment()
 	{
-		if(_state == LIFT_STATE.EXTEND)
+		switch(_state)
 		{
-			_front_servo.set(getAngle() * Map.SERVO_GAIN_VALUE);
-			_back_servo.set(getAngle() * -Map.SERVO_GAIN_VALUE);
-		}
-		else
-		{
-			_front_servo.set(0.0);
-			_back_servo.set(0.0);
-			_front_offset = _front_servo.get();
-			_back_offset = _back_servo.get();
+			case EXTEND:
+				if(!IO.lift_level_3() && (_front_position.get() - _front_offset) > 30.0)
+					_front_servo.set(1.0);
+				else
+					_front_servo.set(getAngle() * Map.SERVO_GAIN_VALUE);
+				
+				if(!IO.lift_level_3() && (_back_position.get() - _back_offset) > 30.0)
+					_back_servo.set(1.0);
+				else
+					_back_servo.set(getAngle() * -Map.SERVO_GAIN_VALUE);
+
+				break;
+
+			case FRONT_UP:
+				_front_servo.set(0.0);
+				_back_servo.set(1.0);
+				break;
+
+			default:
+				_front_servo.set(0.0);
+				_back_servo.set(0.0);
+				_front_offset = _front_servo.get();
+				_back_offset = _back_servo.get();
 		}
 	}
 

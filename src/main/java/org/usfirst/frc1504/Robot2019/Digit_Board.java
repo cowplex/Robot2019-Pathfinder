@@ -1,25 +1,25 @@
 package org.usfirst.frc1504.Robot2019;
 
 import org.usfirst.frc1504.Robot2019.DigitBoard;
-import edu.wpi.first.wpilibj.DriverStation;
+//import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 
 public class Digit_Board
 {
-	private DriverStation _ds;	
+	//private DriverStation _ds;	
 	private DigitBoard _board;
 	private Alignmentator _alignmentator;
 	
 	private long _thread_sleep_delay = 100;
-	private int _thread_sleep_counter;
+	//private int _thread_sleep_counter;
 	
 	private double _voltage;
 	
 	private double _current_pot;
-	private double _last_pot;
+	//private double _last_pot;
 	
-	private boolean _a;
-	private boolean _b;
+	//private boolean _a;
+	//private boolean _b;
 
 	
 	//Setting up a separate thread for the Digit Board
@@ -47,7 +47,7 @@ public class Digit_Board
 		_task_thread = new Thread(new Board_Task(this), "1504_Display_Board");
 		_task_thread.setPriority((Thread.NORM_PRIORITY + Thread.MAX_PRIORITY) / 2);
 
-		_ds = DriverStation.getInstance(); 
+		//_ds = DriverStation.getInstance(); 
 		_board = DigitBoard.getInstance();
 		_alignmentator = Alignmentator.getInstance();
 		
@@ -84,10 +84,15 @@ public class Digit_Board
 	{
 		_current_pot = _board.getPotentiometer();
 		_voltage = RobotController.getBatteryVoltage();
-		_a = _board.getAOnRisingEdge();
-		_b = _board.getBOnRisingEdge();
+		//_a = _board.getAOnRisingEdge();
+		//_b = _board.getBOnRisingEdge();
 	}
 	
+	public void write(String digits)
+	{
+		_board.writeDigits(digits);
+	}
+
 	//Writes the values to the digit board.
 	public void write()
 	{
@@ -128,7 +133,7 @@ public class Digit_Board
 
 			_board.writeRaw(buffer);
 		}
-		_last_pot = _current_pot;
+		//_last_pot = _current_pot;
 	}
 	
 	//The loop for the separate thread, where all functions are called.
