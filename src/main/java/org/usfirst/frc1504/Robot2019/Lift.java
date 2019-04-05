@@ -15,6 +15,8 @@ public class Lift implements Updatable
 	public enum LIFT_STATE {RETRACT, EXTEND, FRONT_UP};
 	private LIFT_STATE _state = LIFT_STATE.RETRACT;
 
+	private static final double[] _setpoints = {30.0, 65.0};
+
     private static final Lift instance = new Lift();
     private DriverStation _ds = DriverStation.getInstance();
 
@@ -48,8 +50,8 @@ public class Lift implements Updatable
 		_front_servo = new Servo(Map.LEFT_SERVO_PORT);
 		_back_servo = new Servo(Map.RIGHT_SERVO_PORT);
 
-		_front_analog = new AnalogInput(4);
-		_back_analog  = new AnalogInput(5);
+		_front_analog = new AnalogInput(2);
+		_back_analog  = new AnalogInput(3);
 		_front_position = new AnalogPotentiometer(_front_analog, 100.0);
 		_back_position  = new AnalogPotentiometer(_back_analog,  100.0);
 
@@ -71,7 +73,32 @@ public class Lift implements Updatable
 
 	public double getAngle()
 	{
-		return (_front_position.get() - _front_offset) - (_back_position.get() - _back_offset);
+		return front_position() - back_position();
+	}
+
+	public double front_position()
+	{
+		return (_front_position.get() - _front_offset);
+	}
+
+	public double back_position()
+	{
+		return (_back_position.get() - _back_offset);
+	}
+
+	public boolean get_moving()
+	{
+		int setpoint = IO.lift_level_3() ? 1 : 0;
+		boolean back_moving = back_position() < _setpoints[setpoint];
+		switch(_state)
+		{
+			case EXTEND:
+				return (front_position() < _setpoints[setpoint]) && back_moving;
+			case FRONT_UP:
+				return (front_position() > 1.0) && back_moving;
+			default:
+				return false;
+		}
 	}
 
 	private void servo_adjustment()
@@ -79,12 +106,12 @@ public class Lift implements Updatable
 		switch(_state)
 		{
 			case EXTEND:
-				if(!IO.lift_level_3() && (_front_position.get() - _front_offset) > 30.0)
+				if(!IO.lift_level_3() && front_position() >= _setpoints[0])
 					_front_servo.set(1.0);
 				else
 					_front_servo.set(getAngle() * Map.SERVO_GAIN_VALUE);
 				
-				if(!IO.lift_level_3() && (_back_position.get() - _back_offset) > 30.0)
+				if(!IO.lift_level_3() && back_position() >= _setpoints[0])
 					_back_servo.set(1.0);
 				else
 					_back_servo.set(getAngle() * -Map.SERVO_GAIN_VALUE);
@@ -181,9 +208,10 @@ public class Lift implements Updatable
 		// Must release both buttons to move on to the next position in sequence
 		if(!_lockout && IO.get_lift_activation() == 3 && (_last_input == 1 || _last_input == 2))
 		{
-			_state = (_state.ordinal() + 1 >= LIFT_STATE.values().length) ? 
-				LIFT_STATE.RETRACT :
-				LIFT_STATE.values()[_state.ordinal() + 1];
+			boolean reset = _state.ordinal() + 1 >= LIFT_STATE.values().length;
+			if(reset)
+				Arduino.getInstance().setPartyMode(true);
+			_state = (reset) ? LIFT_STATE.RETRACT : LIFT_STATE.values()[_state.ordinal() + 1];
 			_lockout = true;
 		}
 		else if (IO.get_lift_activation() == 0)

@@ -1,5 +1,6 @@
 package org.usfirst.frc1504.Robot2019;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -42,6 +43,7 @@ public class Arduino
 		private Drive _drive;// = Drive.getInstance();
 		private Digit_Board _digit;
 		private DigitBoard _board;
+		private Lift _lift;
 
 		private Hatch.HATCH_STATE _last_hatch = null;
 		private Elevator.ELEVATOR_MODE _last_elevator_mode = null;
@@ -134,15 +136,39 @@ public class Arduino
 			_digit.start();
 		}
 
+		private void lift_sequence()
+		{
+			_arduino.setPartyMode(false);
+			_arduino.setArmLightsState(false);
+			_arduino.setPostLightsState(false);
+
+			int R = DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red ? 255 : 0;
+			int B = (R == 255) ? 0 : 255;
+			_arduino.setArmLightsColor(R, 0, B);
+			_arduino.setPostLightsColor(R, 0, B);
+
+			while(_lift.getState() != Lift.LIFT_STATE.RETRACT)
+			{
+				_arduino.setArmLightsState(_lift.get_moving());
+				_arduino.setPostLightsState(_lift.get_moving());
+				Timer.delay(.1);
+			}
+
+			_arduino.setPartyMode(true);
+
+			_initialize = true;
+		}
+
 		public void run()
 		{
-			while(_hatch == null || _elevator == null || _drive == null || _digit == null || _board == null)
+			while(_hatch == null || _elevator == null || _drive == null || _digit == null || _board == null || _lift == null)
 			{
 				_hatch = Hatch.getInstance();
 				_elevator = Elevator.getInstance();
 				_drive = Drive.getInstance();
 				_digit = Digit_Board.getInstance();
 				_board = DigitBoard.getInstance();
+				_lift = Lift.getInstance();
 				Timer.delay(.08);
 			}
 
@@ -157,9 +183,10 @@ public class Arduino
 				}
 
 				if(_diagnostic)
-				{
 					run_diagnostic();
-				}
+
+				if(_lift.getState() != Lift.LIFT_STATE.RETRACT)
+					lift_sequence();
 				
 				// Set post color
 				if(_hatch.getState() != _last_hatch || _last_elevator_mode != _elevator.getMode() || _initialize)

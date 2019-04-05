@@ -101,8 +101,8 @@ public class Robot extends RobotBase {
 				char edge_track = 0;
 				PowerDistributionPanel pdp = new PowerDistributionPanel();
 
-				AnalogInput pressure_1 = new AnalogInput(2);
-				AnalogInput pressure_2 = new AnalogInput(3);
+				AnalogInput pressure_1 = new AnalogInput(4);
+				AnalogInput pressure_2 = new AnalogInput(5);
 				//Compressor c = new Compressor(0);
 				
 				/*SmartDashboard.putNumber("Auton Delay", 0.0);
@@ -209,15 +209,9 @@ public class Robot extends RobotBase {
     public void operatorControl() {
 		System.out.println("Operator Control");
 		_arduino.diagnostic(false);
+		_arduino.update(true);
     	_arduino.setPulseSpeed(20);
         _arduino.setPartyMode(false);
-        /*if (_ds.getAlliance() == DriverStation.Alliance.Blue)
-        	_arduino.setMainLightsColor(0, 255, 0);
-        else if (_ds.getAlliance() == DriverStation.Alliance.Red)
-        	_arduino.setMainLightsColor(0, 0, 255);
-        else
-        	_arduino.setMainLightsColor(255, 0, 0);
-    	_arduino.setGearLights(GEAR_MODE.INDIVIDUAL_INTENSITY, 0.5, 0.5);*/
     }
 
     /**
@@ -232,7 +226,6 @@ public class Robot extends RobotBase {
 			Elevator.getInstance().set(Elevator.ELEVATOR_MODE.HATCH, 0, true);
 			m_ds.waitForData(.150); // Blocks until we get new data or 150ms elapse
             _semaphore.newData();
-			// ?!?!
     	}
     }
 
